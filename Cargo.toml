@@ -1,0 +1,6 @@
+[package]
+name = "rscat"
+version = "0.1.0"
+authors = ["Caius Durling <dev@caius.name>"]
+
+[dependencies]
