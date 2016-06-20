@@ -3,16 +3,10 @@ use std::fs::File;
 use std::io::Write;
 use std::io;
 use std::path::Path;
-use std::path::PathBuf;
 use std::process::exit;
 
 fn copy_stdio() {
   io::copy(&mut io::stdin(), &mut io::stdout()).unwrap();
-}
-
-fn copy_file(path: PathBuf) {
-  let mut file = File::open(path).unwrap();
-  io::copy(&mut file, &mut io::stdout()).unwrap();
 }
 
 fn main() {
@@ -34,7 +28,10 @@ fn main() {
           writeln!(io::stderr(), "cat: {}: No such file or directory", path).unwrap();
           exit_code = 1;
         },
-        Ok(filepath) => copy_file(filepath),
+        Ok(filepath) => {
+          let mut file = File::open(filepath).unwrap();
+          io::copy(&mut file, &mut io::stdout()).unwrap();
+        },
       }
     }
   }
