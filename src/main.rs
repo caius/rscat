@@ -1,7 +1,14 @@
 use std::env;
 use std::fs::File;
 use std::io;
+use std::io::Write;
 use std::path::Path;
+use std::path::PathBuf;
+
+fn copy_file(path: PathBuf) {
+  let mut file = File::open(path).unwrap();
+  io::copy(&mut file, &mut io::stdout()).unwrap();
+}
 
 fn main() {
 
@@ -9,13 +16,14 @@ fn main() {
 
   if argv.len() == 0 {
     io::copy(&mut io::stdin(), &mut io::stdout()).unwrap();
-  } else {
-    let handlers = argv
-      .map (|path| Path::new(&path).canonicalize().unwrap() )
-      .map (|path| File::open(&path).unwrap() );
+    return
+  }
 
-    for mut file in handlers {
-      io::copy(&mut file, &mut io::stdout()).unwrap();
+  for path in argv {
+    match Path::new(&path).canonicalize() {
+      Err(_) => writeln!(io::stderr(), "cat: {}: No such file or directory", path).unwrap(),
+      Ok(filepath) => copy_file(filepath),
     }
   }
+
 }
